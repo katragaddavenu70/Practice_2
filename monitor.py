@@ -58,9 +58,9 @@ def send_exam_quiz(q_data):
     if len(full_text) <= 300:
         poll_question = full_text
     else:
-        split_index = len(full_text) - 300
-        message_chunk = full_text[:split_index].strip()
-        poll_question = full_text[split_index:].strip()
+        # FIXED: Slice backwards from the end to leave exactly 300 characters for the poll
+        message_chunk = full_text[:-300].strip()
+        poll_question = full_text[-300:].strip()
         
         try:
             send_message(f"📖 *{message_chunk} ...*")
@@ -72,7 +72,7 @@ def send_exam_quiz(q_data):
     payload = {
         "chat_id": CHAT_ID,
         "question": poll_question,
-        "options": json.dumps(telegram_options),
+        "options": telegram_options,  # FIXED: Passing raw list, requests handles string conversion
         "type": "quiz",
         "correct_option_id": correct_idx,
         "is_anonymous": False
@@ -81,10 +81,17 @@ def send_exam_quiz(q_data):
     # 4. Inject Clickable Document Reference
     if "file_link" in q_data and q_data["file_link"]:
         link = q_data["file_link"]
-        # Use a short label for your Google Drive URLs to fit 200-char limits safely
         file_label = "test.pdf" if "test.pdf" in link else f"Source File (Q.{q_data['question_number']})"
-        payload["explanation"] = f"Source Reference: [{file_label}]({link})"
-        payload["explanation_parse_mode"] = "Markdown"
+        explanation_text = f"Source Reference: [{file_label}]({link})"
+        
+        # SAFEGUARD: Telegram allows max 200 characters for the entire explanation string.
+        # If the generated URL is too long, drop the markdown formatting and just send the raw link.
+        if len(explanation_text) <= 200:
+            payload["explanation"] = explanation_text
+            payload["explanation_parse_mode"] = "Markdown"
+        else:
+            # Fallback to absolute bare minimum to keep it under 200 chars
+            payload["explanation"] = link[:200]
 
     try:
         response = requests.post(url, json=payload)
@@ -92,6 +99,9 @@ def send_exam_quiz(q_data):
         print(f"Successfully sent Question {q_data['question_number']}!")
     except Exception as e:
         print(f"Failed to send poll for Q.{q_data['question_number']}: {e}")
+        # Print response text from Telegram to help diagnose if it fails for other reasons
+        if hasattr(e, 'response') and e.response is not None:
+            print(f"Telegram Error Body: {e.response.text}")
 
 def main():
     # Ensure config tokens exist before executing
