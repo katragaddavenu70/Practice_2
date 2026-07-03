@@ -5,7 +5,7 @@ import requests
 import re
 
 # --- CONFIG ---
-TOKEN = os.getenv("TELEGRAM_TOKEN")
+TOKEN = os.getenv("CACHE_BOT")
 CHAT_ID = os.getenv("CHAT_ID")
 DATA_FILE = "data.json"  # References the data.json in your repository
 
