@@ -23,5 +23,5 @@ jobs:
       - name: Execute Quiz Script
         env:
           TELEGRAM_TOKEN: ${{ secrets.CACHE_BOT }}
-          CHAT_ID: ${{ secrets.CHAT_ID }}
+          CHAT_ID: ${{ secrets.CACHE_CHAT }}
         run: python monitor.py
