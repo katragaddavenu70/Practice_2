@@ -9,7 +9,6 @@ from cryptography.fernet import Fernet
 TOKEN = os.getenv("CACHE_BOT")
 CHAT_ID = os.getenv("CACHE_CHAT")
 encryption_key_str = os.getenv("KEY")
-DATA_FILE = "data.json"  # References the data.json in your repository
 
 def clean_text(text):
     """
@@ -109,19 +108,6 @@ def main():
     # Ensure config tokens exist before executing
     if not TOKEN or not CHAT_ID:
         print("Error: TELEGRAM_TOKEN or CHAT_ID environment variables are missing.")
-        return
-
-    # Check if the data.json file exists locally in the repository workspace
-    if not os.path.exists(DATA_FILE):
-        print(f"Error: {DATA_FILE} could not be found in the current directory.")
-        return
-
-    # Load questions array from local file
-    try:
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
-            questions_list = json.load(f)
-    except Exception as e:
-        print(f"Error reading JSON file data: {e}")
         return
 
     fernet = Fernet(encryption_key_str.encode())
