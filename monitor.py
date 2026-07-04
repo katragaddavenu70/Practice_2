@@ -8,7 +8,7 @@ from cryptography.fernet import Fernet
 # --- CONFIG ---
 TOKEN = os.getenv("CACHE_BOT")
 CHAT_ID = os.getenv("CACHE_CHAT")
-encryption_key_str = os.getenv("KEY")
+KEY = os.getenv("KEY")
 
 def clean_text(text):
     """
@@ -110,6 +110,8 @@ def main():
         print("Error: TELEGRAM_TOKEN or CHAT_ID environment variables are missing.")
         return
 
+    encryption_key_str = f"{KEY}"
+    
     fernet = Fernet(encryption_key_str.encode())
 
     # Select random file
