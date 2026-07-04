@@ -119,7 +119,10 @@ def main():
     # Select random file
     file_num = random.randint(1,173)
 
-    #random_encrypted_file_path = str(file_num)+".json.enc"
+    while(file_num in [26,27]):
+        file_num = random.randint(1,173)
+
+    random_encrypted_file_path = str(file_num)+".json.enc"
     random_encrypted_file_path = "1.json.enc"
 
     try:
