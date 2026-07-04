@@ -111,7 +111,7 @@ def main():
         print("Error: TELEGRAM_TOKEN or CHAT_ID environment variables are missing.")
         return
 
-    encryption_key_str = f"{KEY}"
+    encryption_key_str = b"{KEY}"
     encryption_key = encryption_key_str.encode()
 
     fernet = Fernet(encryption_key)
