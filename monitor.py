@@ -116,18 +116,7 @@ def main():
     encryption_key_str = f"{KEY}"
     encryption_key = encryption_key_str.encode()
 
-    salt = b'static_salt_bytes' 
-    
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=salt,
-        iterations=480_000,
-    )
-
-    key = base64.urlsafe_b64encode(kdf.derive(encryption_key))
-    
-    fernet = Fernet(key)
+    fernet = Fernet(encryption_key)
 
     # Select random file
     file_num = random.randint(1,173)
